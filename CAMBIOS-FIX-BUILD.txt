@@ -1,0 +1,19 @@
+AS Design Studio — Hotfix build Next.js V1.3
+
+Correcciones en los tres componentes afectados por TypeScript:
+- CaseStudyDialog.tsx: tabIndex={-1}
+- Expertise.tsx: tabIndex={0} en cuatro elementos
+- Loader.tsx: <radialGradient> con capitalización válida para JSX en apertura y cierre
+
+No modifica CSS, animaciones, imágenes ni dependencias.
+
+Aplicar en la raíz de AS_Design_Studio_Web_1_0:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\AS_Design_Studio_Fix_Vercel_TS_1_3.zip" -DestinationPath . -Force
+
+OJO: Si tu ubicación es otra, ajusta -Path.
+
+Prueba:
+npm run build
+git add src/components/CaseStudyDialog.tsx src/components/Loader.tsx src/components/sections/Expertise.tsx
+git commit -m "fix: correct JSX props and SVG radial gradient"
+git push origin main
