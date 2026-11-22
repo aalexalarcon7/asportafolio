@@ -176,6 +176,15 @@ function caseGalleryCard(card,src,i){
  image.alt=`${card.dataset.name} — pieza ${i+1}`;
  image.loading='lazy';image.decoding='async';
  stage.append(image);
+ // Directional lighting: use local coordinates so the artwork itself is never stretched.
+ if(!reduce && matchMedia('(pointer:fine)').matches){
+  button.addEventListener('pointermove',event=>{
+   const r=button.getBoundingClientRect();
+   button.style.setProperty('--pointer-x',`${((event.clientX-r.left)/r.width*100).toFixed(1)}%`);
+   button.style.setProperty('--pointer-y',`${((event.clientY-r.top)/r.height*100).toFixed(1)}%`);
+  },{passive:true});
+  button.addEventListener('pointerleave',()=>{button.style.removeProperty('--pointer-x');button.style.removeProperty('--pointer-y')});
+ }
  const info=document.createElement('div');info.className='case-piece-label';
  const type=document.createElement('span');type.textContent=`EXPLORATION / ${String(i+1).padStart(2,'0')}`;
  const hint=document.createElement('span');hint.textContent='AMPLIAR ↗';

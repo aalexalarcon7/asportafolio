@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArtworkLightbox } from '@/components/ArtworkLightbox';
+import { ProjectRouteMotion } from '@/components/ProjectRouteMotion';
 import type { Metadata } from 'next';
 import { projects, studio } from '@/data/site';
 
@@ -27,6 +28,6 @@ export default async function ProjectPage({params}:RouteProps){
   <section className="project-route-info shell"><div><div className="micro muted">01 — THE BRIEF</div><h2>THE IDEA<br/>BEHIND IT.</h2></div><div><p>{project.brief}</p><p>{project.description}</p><div className="micro muted">ÁREAS: {project.deliverables.join(' / ').toUpperCase()}</div></div></section>
   <section className="project-route-visual shell"><div className="micro muted">02 — VISUAL EXPLORATIONS / CLIC PARA AMPLIAR</div><div className="project-route-gallery">{(project.gallery || []).map((image, i) => <button type="button" className="work-art project-gallery-item artwork-launch" data-artwork-open={project.slug} data-artwork-index={i + 1} key={image} aria-label={`Ampliar ${project.name}: pieza ${i + 1}`}><Image src={image} alt={`${project.name}: pieza ${i + 1}`} fill sizes="(max-width: 700px) 100vw, 50vw" className="project-gallery-image" /><span className="project-gallery-magnify" aria-hidden="true">VIEW FULL IMAGE ↗</span></button>)}</div><p className="micro muted">Piezas originales aportadas para el portafolio. Los proyectos de carácter académico o conceptual no representan encargos oficiales de las marcas mencionadas.</p></section>
   <footer className="project-route-next shell"><span className="micro muted">NEXT PROJECT / {next.number}</span><Link href={`/works/${next.slug}`}> {next.name.toUpperCase()} <span aria-hidden="true">↗</span></Link><Link href="/#works" className="micro">← TODOS LOS PROYECTOS</Link></footer>
- </main><ArtworkLightbox />
+ </main><ArtworkLightbox /><ProjectRouteMotion />
  </>
 }
