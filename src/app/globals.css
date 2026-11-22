@@ -201,3 +201,53 @@
 @media(max-width:700px){.project-route-gallery .project-gallery-item{min-height:350px}}
 /* Long project names retain legibility in expanded case studies */
 #dialog-title,.project-route-intro h1,#case-next-name{overflow-wrap:anywhere}
+
+/* V1.2 — Artwork presentation: never crop or distort original work. */
+.work-art.real-cover,.experience-display,.project-route-art{background:#101010}
+.work-cover-backdrop{position:absolute!important;inset:0;z-index:0;object-fit:cover;filter:blur(27px) brightness(.38) saturate(.72);transform:scale(1.18);pointer-events:none}
+.work-cover-foreground{position:absolute;z-index:1;inset:clamp(16px,3vw,36px);display:block;pointer-events:none;overflow:hidden;transition:transform .8s var(--ease)}
+.work-cover-foreground .work-cover-image{width:100%;height:100%;object-fit:contain;object-position:center;transform:none;position:absolute;inset:0;filter:drop-shadow(0 12px 24px #0007)}
+.work-card:hover .work-cover-foreground,.work-card:focus-visible .work-cover-foreground{transform:scale(1.025)}
+.work-card:hover .work-cover-foreground .work-cover-image{transform:none}
+.work-card .work-art:after{background:linear-gradient(0deg,#0009 0%,transparent 18%,transparent 84%,#0004)}
+.experience-display .work-cover-foreground,.next-art .work-cover-foreground{inset:clamp(12px,3vw,32px)}
+.project-route-art{display:flex;width:100%;padding:0;border:0;cursor:zoom-in;position:relative}
+.project-route-art .work-cover-image{object-fit:contain;transform:none;transition:transform .5s var(--ease);padding:clamp(15px,3vw,48px)}
+.project-route-art:hover .work-cover-image{transform:scale(1.014)}
+
+/* V1.2 — complete artwork gallery within A CLOSER LOOK. */
+.case-gallery-instruction{display:flex;justify-content:space-between;gap:18px;margin:-1.8vh 0 22px;color:#9c9c9c;letter-spacing:.14em}
+.case-showcase{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:clamp(18px,2.6vw,38px);min-height:0}
+.case-piece,.case-piece:last-child{width:100%;height:clamp(350px,43vw,650px);min-height:0;margin:0;display:block;cursor:zoom-in;border:1px solid #393939;padding:0;background:#141414;text-align:left;appearance:none;overflow:hidden;isolation:isolate}
+.case-piece:nth-child(even){margin-top:clamp(18px,5vw,100px)}
+.case-piece .case-piece-image{position:absolute;inset:0;overflow:hidden;display:block;transform:translateY(var(--gallery-shift,0px));transition:transform .7s var(--ease)}
+.case-piece .case-piece-image img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;padding:clamp(14px,2.5vw,35px);transition:transform .75s var(--ease);filter:drop-shadow(0 16px 30px #0006)}
+.case-piece:hover .case-piece-image img,.case-piece:focus-visible .case-piece-image img{transform:scale(1.045)}
+.case-piece:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 76%,#000b 100%);z-index:2}
+.case-piece-label{pointer-events:none;bottom:19px;z-index:3}
+.case-piece:focus-visible{outline:2px solid white;outline-offset:5px}
+.experience-view-full{position:absolute;bottom:17px;left:17px;z-index:7;border:1px solid #ffffff88;background:#050505b7;color:#fff;padding:12px 15px;transition:background .25s,color .25s}
+.experience-view-full:hover,.experience-view-full:focus-visible{background:#f5f5f5;color:#050505}
+.project-route-gallery .project-gallery-item{cursor:zoom-in;display:block;border:1px solid #343434;padding:0;overflow:hidden;min-height:0;height:clamp(350px,48vw,750px);background:#131313}
+.project-gallery-image{object-fit:contain;padding:clamp(15px,2vw,35px);transition:transform .8s var(--ease)}
+.project-gallery-item:hover .project-gallery-image,.project-gallery-item:focus-visible .project-gallery-image{transform:scale(1.03)}
+.project-gallery-magnify{position:absolute;z-index:3;bottom:15px;right:15px;font-size:10px;letter-spacing:.11em;background:#060606d0;padding:11px 14px;border:1px solid #ffffff77;opacity:0;transform:translateY(9px);transition:opacity .3s,transform .3s}
+.project-gallery-item:hover .project-gallery-magnify,.project-gallery-item:focus-visible .project-gallery-magnify{opacity:1;transform:translateY(0)}
+
+/* V1.2 — cinematic full-screen art lightbox, consistent with the monochrome identity. */
+.artwork-lightbox{position:fixed;inset:0;width:100%;height:100dvh;z-index:200;isolation:isolate;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:#050505f5;color:#f4f3ef;backdrop-filter:blur(24px);animation:artwork-lightbox-in .4s cubic-bezier(.2,.8,.2,1) both;overflow:hidden}
+@keyframes artwork-lightbox-in{from{opacity:0;clip-path:inset(0 0 100% 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.artwork-lightbox-top,.artwork-lightbox-bottom{z-index:3;position:relative;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px var(--gutter);background:#050505c9}
+.artwork-lightbox-top{border-bottom:1px solid #ffffff3b;min-height:77px}.artwork-lightbox-bottom{border-top:1px solid #ffffff35;min-height:83px}
+.artwork-lightbox-heading{display:flex;flex-direction:column;gap:6px;min-width:0}.artwork-lightbox-heading strong{font-weight:500;font-size:clamp(15px,1.45vw,23px);letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.artwork-lightbox-brand{color:#888}
+.artwork-lightbox-close{background:transparent;border:1px solid #747474;color:white;padding:14px 20px;letter-spacing:.12em;white-space:nowrap;transition:background .25s,color .25s}.artwork-lightbox-close:hover{background:#eee;color:#050505}.artwork-lightbox-close span{margin-left:20px}
+.artwork-lightbox-backdrop{position:absolute;inset:0;background-position:center;background-size:cover;filter:blur(90px) brightness(.16);transform:scale(1.2);pointer-events:none;z-index:0}
+.artwork-lightbox-stage{position:relative;z-index:2;min-height:0;padding:clamp(10px,2vh,28px) clamp(16px,4vw,65px);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.artwork-lightbox-frame{position:relative;width:100%;height:100%;max-width:1600px;min-height:0;overflow:hidden;touch-action:pan-y}
+.artwork-lightbox-picture{position:relative;width:100%;height:100%;touch-action:none;transition:transform .35s cubic-bezier(.2,.8,.2,1);cursor:zoom-in;user-select:none}
+.artwork-lightbox-picture.is-zoomed{cursor:grab}.artwork-lightbox-picture.is-zoomed:active{cursor:grabbing;transition:none}
+.artwork-lightbox-image{object-fit:contain;object-position:center;filter:drop-shadow(0 10px 36px #000c);pointer-events:none;user-select:none}
+.artwork-lightbox-counter{display:flex;gap:14px;align-items:center;font-size:16px;color:#fff;white-space:nowrap}.artwork-lightbox-counter .muted{color:#8a8a8a}
+.artwork-lightbox-controls{display:flex;align-items:center;gap:8px}.artwork-lightbox-control{color:white;background:#171717c7;border:1px solid #ffffff4a;padding:13px 17px;transition:background .25s,border-color .25s;white-space:nowrap}.artwork-lightbox-control:hover{background:#333;border-color:#ddd}.artwork-lightbox-arrow{font-size:24px;line-height:1;min-width:56px}.artwork-lightbox-help{color:#777;text-align:right}
+@media(max-width:700px){.case-showcase{grid-template-columns:1fr;gap:22px}.case-piece,.case-piece:last-child{height:min(66vh,560px);margin:0!important}.case-gallery-instruction{margin:10px 0 22px;font-size:9px}.case-piece .case-piece-image img{padding:16px}.project-route-gallery .project-gallery-item{height:min(65vh,560px);min-height:330px}.project-gallery-magnify{opacity:1;transform:none;font-size:9px}.artwork-lightbox-top,.artwork-lightbox-bottom{padding:13px 18px;min-height:64px}.artwork-lightbox-bottom{flex-wrap:wrap;gap:12px}.artwork-lightbox-help{display:none}.artwork-lightbox-stage{padding:12px 8px}.artwork-lightbox-control{padding:12px 13px}.artwork-lightbox-arrow{min-width:48px}.artwork-lightbox-heading strong{max-width:65vw}.artwork-lightbox-close{padding:12px}.artwork-lightbox-close span{margin-left:6px}}
+@media(prefers-reduced-motion:reduce){.artwork-lightbox{animation:none}.case-piece .case-piece-image,.case-piece .case-piece-image img,.project-gallery-image{transform:none!important;transition:none!important}}

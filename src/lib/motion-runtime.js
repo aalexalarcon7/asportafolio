@@ -165,12 +165,22 @@ const display=$('#experience-display'),artHost=$('#experience-art'),closeButton=
 let activeWorkIndex=-1,returnFocus=null,projectMotionToken=0,activeFly=null,projectTransitionRunning=false;
 function removeFly(){if(activeFly){activeFly.remove();activeFly=null}}
 function clonedArtwork(card){const artwork=card.querySelector('.work-art').cloneNode(true);artwork.removeAttribute('id');return artwork}
-function galleryArtwork(card,which){
- const artwork=clonedArtwork(card),url=card.dataset[which];
- if(!url)return artwork;
- artwork.querySelectorAll('img,.art-large').forEach(el=>el.remove());
- const img=document.createElement('img');img.src=url;img.alt=`${card.dataset.name}: detalle del proyecto`;img.loading='lazy';img.className='work-cover-image';
- artwork.prepend(img);return artwork;
+function caseGalleryCard(card,src,i){
+ const button=document.createElement('button');button.type='button';
+ button.className='case-piece case-animate';
+ button.dataset.artworkOpen=card.dataset.slug;
+ button.dataset.artworkIndex=String(i+1);
+ button.setAttribute('aria-label',`Ampliar ${card.dataset.name}: pieza ${i+1}`);
+ const stage=document.createElement('div');stage.className='case-piece-image';
+ const image=document.createElement('img');image.src=src;
+ image.alt=`${card.dataset.name} — pieza ${i+1}`;
+ image.loading='lazy';image.decoding='async';
+ stage.append(image);
+ const info=document.createElement('div');info.className='case-piece-label';
+ const type=document.createElement('span');type.textContent=`EXPLORATION / ${String(i+1).padStart(2,'0')}`;
+ const hint=document.createElement('span');hint.textContent='AMPLIAR ↗';
+ info.append(type,hint);button.append(stage,info);
+ return button;
 }
 function populateProject(index){
  const card=workCards[index];activeWorkIndex=index;const permalink=$('#case-permalink');if(permalink)permalink.href='/works/'+card.dataset.slug;
@@ -186,8 +196,9 @@ function populateProject(index){
  const following=(index+1)%workCards.length;
  $('#case-next-name').textContent=workCards[following].dataset.name.toUpperCase();
  $('#next-art').replaceChildren(clonedArtwork(workCards[following]));
- $('#case-art-a').replaceChildren(galleryArtwork(card,'galleryA'));
- $('#case-art-b').replaceChildren(galleryArtwork(card,'galleryB'));
+ const gallery=JSON.parse(card.dataset.gallery||'[]');
+ $('#case-showcase').replaceChildren(...gallery.map((src,i)=>caseGalleryCard(card,src,i)));
+ const cover=$('#open-cover-art');cover.dataset.artworkOpen=card.dataset.slug;cover.dataset.artworkIndex='0';
  $('#project-reading-fill').style.width='0%';
  artHost.replaceChildren(clonedArtwork(card));
  $('#next-project').textContent=index===workCards.length-1?'BACK TO PROJECT 01 ↗':'NEXT PROJECT ↗';
@@ -203,12 +214,12 @@ function flyArtwork(fromRect,toRect,card,reverse=false){
  return anim.finished.catch(()=>{}).then(()=>{if(activeFly===fly)removeFly()});
 }
 function freezePage(state){document.documentElement.style.overflow=state?'hidden':'';document.body.style.overflow=state?'hidden':'';document.querySelector('main').inert=state;header.inert=state;rail.inert=state}
-const chapterElements=$$('.case-animate');
+const chapterElements=()=>$$('.case-animate');
 const chapterObserver=('IntersectionObserver' in window)?new IntersectionObserver(entries=>{
  entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('case-inview')});
 },{root:dialog,threshold:.13,rootMargin:'0px 0px -6% 0px'}):null;
 function resetChapterMotion(){
- chapterElements.forEach(el=>{el.classList.remove('case-inview');if(chapterObserver)chapterObserver.observe(el);else el.classList.add('case-inview')});
+ chapterElements().forEach(el=>{el.classList.remove('case-inview');if(chapterObserver)chapterObserver.observe(el);else el.classList.add('case-inview')});
  updateProjectProgress();
 }
 function updateProjectProgress(){if(!dialog.classList.contains('open'))return;
@@ -217,8 +228,7 @@ function updateProjectProgress(){if(!dialog.classList.contains('open'))return;
  if(!reduce){
    const chapter=$('#case-chapter').getBoundingClientRect();
    const p=clamp((innerHeight-chapter.top)/Math.max(1,chapter.height+innerHeight));
-   $('#case-art-a').style.setProperty('--case-shift-a',`${((p-.5)*-40).toFixed(1)}px`);
-   $('#case-art-b').style.setProperty('--case-shift-b',`${((p-.5)*52).toFixed(1)}px`);
+   $('#case-showcase')?.style.setProperty('--gallery-shift',`${((p-.5)*-22).toFixed(1)}px`);
  }
 }
 dialog.addEventListener('scroll',updateProjectProgress,{passive:true});
@@ -276,7 +286,7 @@ closeButton.addEventListener('click',closeProject);
 $('#next-project').addEventListener('click',()=>swapProject(1));
 $('#prev-project').addEventListener('click',()=>swapProject(-1));
 document.addEventListener('keydown',e=>{
- if(!dialog.classList.contains('open'))return;
+ if(!dialog.classList.contains('open')||document.querySelector('[data-artwork-lightbox="open"]'))return;
  if(e.key==='Escape'){e.preventDefault();closeProject();return}
  if(e.key==='ArrowRight' && !projectTransitionRunning){e.preventDefault();swapProject(1);return}
  if(e.key==='ArrowLeft' && !projectTransitionRunning){e.preventDefault();swapProject(-1);return}

@@ -7,6 +7,7 @@ import { Expertise } from './sections/Expertise';
 import { About } from './sections/About';
 import { Contact } from './sections/Contact';
 import { CaseStudyDialog } from './CaseStudyDialog';
+import { ArtworkLightbox } from './ArtworkLightbox';
 import { CursorLabel } from './CursorLabel';
 import { Loader } from './Loader';
 import { MotionController } from './MotionController';
@@ -17,6 +18,7 @@ export function Portfolio(){
   <SiteHeader />
   <main><Hero /><Exhibition /><SelectedWorks /><Expertise /><About /><Contact /></main>
   <CaseStudyDialog />
+  <ArtworkLightbox />
   <CursorLabel />
   <Loader />
   <MotionController />

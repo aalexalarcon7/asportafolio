@@ -2,9 +2,9 @@ import type { Project } from '@/data/site';
 import Image from 'next/image';
 export function WorkCard({project}:{project:Project}){
  return (
-  <article className="work-card" data-name={project.name} data-number={project.number} data-type={project.category} data-slug={project.slug} data-description={project.description} data-brief={project.brief} data-gallery-a={project.gallery?.[0] || project.coverImage || ""} data-gallery-b={project.gallery?.[1] || project.coverImage || ""} role="button" tabIndex={0} aria-label={`Abrir vista del ${project.name}`}>
+  <article className="work-card" data-name={project.name} data-number={project.number} data-type={project.category} data-slug={project.slug} data-description={project.description} data-brief={project.brief} data-gallery-a={project.gallery?.[0] || project.coverImage || ""} data-gallery-b={project.gallery?.[1] || project.coverImage || ""} data-gallery={JSON.stringify(project.gallery || [])} role="button" tabIndex={0} aria-label={`Abrir vista del ${project.name}`}>
    <div className={`work-art ${project.coverClass}`}>
-    {project.coverImage ? <Image className="work-cover-image" src={project.coverImage} alt={`Portada del ${project.name}`} fill sizes="(max-width: 700px) 100vw, 75vw" /> : <span className="art-large">{project.coverText}</span>}
+    {project.coverImage ? <><Image className="work-cover-backdrop" src={project.coverImage} alt="" aria-hidden="true" fill sizes="(max-width: 700px) 100vw, 75vw" /><span className="work-cover-foreground"><Image className="work-cover-image" src={project.coverImage} alt={`Portada del ${project.name}`} fill sizes="(max-width: 700px) 100vw, 75vw" /></span></> : <span className="art-large">{project.coverText}</span>}
     <span className="work-art-corners" aria-hidden="true" />
     <span className="work-art-meta micro">AS® / {project.number}</span>
     <span className="work-art-bottom micro">PROYECTO DE DISEÑO — PORTFOLIO</span>

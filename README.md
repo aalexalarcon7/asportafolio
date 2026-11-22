@@ -72,3 +72,13 @@ Para actualizar la instalación local, reemplazá los archivos del proyecto con 
 No implica que Cachafaz o Lana Del Rey hayan encargado estos trabajos ni que Tango Arrabal haya sido un festival realizado. Se presentan como trabajos conceptuales o académicos.
 
 **Pendiente:** fecha y detalles confirmados de cada trabajo, datos de contacto, herramientas y fotos para About.
+
+## V1.2 — Galerías sin recortes + visor cinematográfico
+
+- Las portadas en Selected Works y los casos de estudio se presentan con `object-fit: contain` y un fondo desenfocado discreto, sin deformar las piezas originales.
+- `A Closer Look` muestra **todas** las imágenes del proyecto; al pulsar cualquiera se abre un visor a pantalla completa.
+- En el visor: flechas del teclado / botones para navegar, Escape para cerrar, zoom, arrastre de la imagen ampliada y gesto horizontal en pantallas táctiles.
+- La portada y la ruta directa `/works/[slug]` también permiten abrir imágenes.
+- El resto del motion design (loader, Hero, Exhibition, carrusel horizontal y Toolbox) permanece sin modificaciones.
+
+Para comprobar la compilación: `npm install && npm run build`.
