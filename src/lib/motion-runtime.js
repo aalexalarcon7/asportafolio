@@ -125,30 +125,94 @@ function startIntro(){
 $('#skip').addEventListener('click',()=>endIntro(true));$('#replay').addEventListener('click',()=>{if(reduce){scrollTo({top:0,behavior:'instant'});return}startIntro()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&introActive)endIntro(true)});
 const sectionIds=['home','exhibition','works','expertise','about','contact'];
 function sectionProgress(id){const el=document.getElementById(id),r=el.getBoundingClientRect();return clamp(-r.top/Math.max(1,r.height-innerHeight))}
-function updateScroll(){scrollRaf=0;const y=window.scrollY,h=innerHeight;const hp=sectionProgress('home'),ep=sectionProgress('exhibition'),wp=sectionProgress('works');if(!reduce){
-$('#hero-main').style.transform=`translate3d(0,${-hp*118}px,0) scale(${1+hp*.14})`;$('#hero-main').style.opacity=String(1-clamp(hp*.88));heroStar.style.transform=`translate3d(${hp*190}px,${-hp*130}px,0) rotate(${hp*-18}deg) scale(${1+hp*.15})`;$('.hero-lower').style.opacity=String(1-hp);
-const corridor=$('#gallery-corridor');corridor.style.transform=`translate3d(0,${lerp(65,-25,ep)}px,0) scale(${lerp(.8,1.23,ep)})`;$('.gallery-light').style.opacity=String(lerp(.28,.95,clamp(ep*2)));$$('.gallery-poster').forEach((p,i)=>{const offset=i-2;const curve=Math.sin(ep*Math.PI);p.style.transform=`translate3d(${offset*ep*-26}px,${-ep*(20+Math.abs(offset)*15)}px,${(ep-.4)*Math.abs(offset)*-75}px) rotateY(${offset*(1-ep)*9}deg) scale(${1+ep*(i===0?.11:.03)})`;p.style.opacity=String(clamp((ep+.09)*5)*(ep>.87?lerp(1,.45,(ep-.87)/.13):1))});$('.gallery-overlay').style.transform=`translate3d(0,${-ep*55}px,0)`;$('.gallery-overlay').style.opacity=String(ep>.74?clamp(1-(ep-.74)*3.6):1);$('#gallery-count').textContent=ep<.36?'01 — 04':ep<.72?'02 — 04':'03 — 04';
-const workCards=$$('.work-card'),workScene=$('#works-scene');
-const inWorks=$('#works').getBoundingClientRect().top<h*.85&&$('#works').getBoundingClientRect().bottom>h*.15;
-workScene.classList.toggle('work-active',inWorks);
-if(innerWidth>700){
- const track=$('#work-track'),win=$('#work-window'),max=Math.max(0,track.scrollWidth-win.clientWidth);
- track.style.transform=`translate3d(${-max*wp}px,0,0)`;
- $('#works-progress-fill').style.width=`${wp*100}%`;
- let nearest=0,best=Infinity;
- workCards.forEach((card,i)=>{
-  const r=card.getBoundingClientRect(),distance=(r.left+r.width*.5-innerWidth*.5)/Math.max(1,innerWidth);
-  const vis=clamp(1-Math.abs(distance)*1.65);
-  card.style.setProperty('--art-shift-x',`${(-distance*42).toFixed(1)}px`);
-  card.style.setProperty('--art-shift-y',`${(Math.sin((wp+i*.22)*Math.PI)*13).toFixed(1)}px`);
-  if(Math.abs(distance)<best){best=Math.abs(distance);nearest=i}
- });
- workCards.forEach((card,i)=>card.classList.toggle('is-featured',i===nearest));
- $('#works-counter').textContent=String(nearest+1).padStart(2,'0')+' / '+String(workCards.length).padStart(2,'0');
- $('#works-current-label').textContent='PROJECT '+String(nearest+1).padStart(2,'0')+' — SELECTED WORKS';
+// Mobile performance: read layouts once, only animate sections near the viewport.
+// The desktop's approved 3D choreography remains unchanged.
+const mobileMotionMedia=window.matchMedia('(max-width:700px)');
+const heroMain=$('#hero-main'),heroLower=$('.hero-lower');
+const corridor=$('#gallery-corridor'),galleryLight=$('.gallery-light');
+const galleryPosters=$$('.gallery-poster'),galleryOverlay=$('.gallery-overlay'),galleryCount=$('#gallery-count');
+const workCardsForScroll=$$('.work-card'),workSceneForScroll=$('#works-scene'),
+      workTrackForScroll=$('#work-track'),workWindowForScroll=$('#work-window');
+const progressLinks=$$('.progress-rail a');
+function isNearViewport(rect,height){return rect.bottom>-height*.12&&rect.top<height*1.12}
+function rectProgress(rect,height){return clamp(-rect.top/Math.max(1,rect.height-height))}
+function updateScroll(){
+ scrollRaf=0;
+ const h=innerHeight, mobile=mobileMotionMedia.matches;
+ const homeRect=document.getElementById('home').getBoundingClientRect();
+ const galleryRect=document.getElementById('exhibition').getBoundingClientRect();
+ const worksRect=document.getElementById('works').getBoundingClientRect();
+ const hp=rectProgress(homeRect,h),ep=rectProgress(galleryRect,h),wp=rectProgress(worksRect,h);
+ if(!reduce){
+  if(isNearViewport(homeRect,h)){
+   // Desktop keeps the original text scale; mobile avoids an extra large composited layer.
+   heroMain.style.transform=mobile?`translate3d(0,${(-hp*64).toFixed(1)}px,0)`:
+     `translate3d(0,${-hp*118}px,0) scale(${1+hp*.14})`;
+   heroMain.style.opacity=String(1-clamp(hp*(mobile?.82:.88)));
+   heroStar.style.transform=mobile?`translate3d(${(hp*64).toFixed(1)}px,${(-hp*52).toFixed(1)}px,0)`:
+     `translate3d(${hp*190}px,${-hp*130}px,0) rotate(${hp*-18}deg) scale(${1+hp*.15})`;
+   heroLower.style.opacity=String(1-hp);
+  }
+  if(isNearViewport(galleryRect,h)){
+   if(mobile){
+    // A lightweight 2D camera move replaces per-frame 3D scaling, Z translation and Y rotation.
+    // Only the visible artworks are animated; transforms remain GPU-compositable.
+    corridor.style.transform=`translate3d(0,${(lerp(28,-18,ep)).toFixed(1)}px,0)`;
+    galleryLight.style.opacity=String(lerp(.32,.74,clamp(ep*2)));
+    galleryPosters.forEach((poster,i)=>{
+     if(i>2)return; // The other two artworks are display:none on small screens.
+     const offset=i-1;
+     poster.style.transform=`translate3d(${(offset*ep*-9).toFixed(1)}px,${(-ep*(12+Math.abs(offset)*8)).toFixed(1)}px,0)`;
+     poster.style.opacity=String(clamp((ep+.12)*5)*(ep>.87?lerp(1,.65,(ep-.87)/.13):1));
+    });
+    galleryOverlay.style.transform=`translate3d(0,${(-ep*28).toFixed(1)}px,0)`;
+   } else {
+    corridor.style.transform=`translate3d(0,${lerp(65,-25,ep)}px,0) scale(${lerp(.8,1.23,ep)})`;
+    galleryLight.style.opacity=String(lerp(.28,.95,clamp(ep*2)));
+    galleryPosters.forEach((poster,i)=>{
+     const offset=i-2;
+     poster.style.transform=`translate3d(${offset*ep*-26}px,${-ep*(20+Math.abs(offset)*15)}px,${(ep-.4)*Math.abs(offset)*-75}px) rotateY(${offset*(1-ep)*9}deg) scale(${1+ep*(i===0?.11:.03)})`;
+     poster.style.opacity=String(clamp((ep+.09)*5)*(ep>.87?lerp(1,.45,(ep-.87)/.13):1));
+    });
+    galleryOverlay.style.transform=`translate3d(0,${-ep*55}px,0)`;
+   }
+   galleryOverlay.style.opacity=String(ep>.74?clamp(1-(ep-.74)*3.6):1);
+   galleryCount.textContent=ep<.36?'01 — 04':ep<.72?'02 — 04':'03 — 04';
+  }
+  if(isNearViewport(worksRect,h)){
+   const inWorks=worksRect.top<h*.85&&worksRect.bottom>h*.15;
+   workSceneForScroll.classList.toggle('work-active',inWorks);
+   if(!mobile){
+    const max=Math.max(0,workTrackForScroll.scrollWidth-workWindowForScroll.clientWidth);
+    workTrackForScroll.style.transform=`translate3d(${-max*wp}px,0,0)`;
+    $('#works-progress-fill').style.width=`${wp*100}%`;
+    let nearest=0,best=Infinity;
+    workCardsForScroll.forEach((work,i)=>{
+     const rect=work.getBoundingClientRect();
+     const distance=(rect.left+rect.width*.5-innerWidth*.5)/Math.max(1,innerWidth);
+     work.style.setProperty('--art-shift-x',`${(-distance*42).toFixed(1)}px`);
+     work.style.setProperty('--art-shift-y',`${(Math.sin((wp+i*.22)*Math.PI)*13).toFixed(1)}px`);
+     if(Math.abs(distance)<best){best=Math.abs(distance);nearest=i}
+    });
+    workCardsForScroll.forEach((work,i)=>work.classList.toggle('is-featured',i===nearest));
+    $('#works-counter').textContent=String(nearest+1).padStart(2,'0')+' / '+String(workCardsForScroll.length).padStart(2,'0');
+    $('#works-current-label').textContent='PROJECT '+String(nearest+1).padStart(2,'0')+' — SELECTED WORKS';
+   }
+  }
+  const contactRect=document.getElementById('contact').getBoundingClientRect();
+  if(isNearViewport(contactRect,h)){
+   const cp=clamp((h-contactRect.top)/(h+contactRect.height*.4));
+   $('#contact-star').style.transform=`translate3d(${-cp*190}px,${cp*85}px,0) rotate(${cp*10}deg)`;
+   $('#contact-outline').classList.toggle('fill',cp>.52);
+  }
+ }
+ // On mobile the progress rail is hidden: don't do its per-section layout work every frame.
+ if(!mobile){
+  let active='home';
+  for(const id of sectionIds)if(document.getElementById(id).getBoundingClientRect().top<h*.48)active=id;
+  progressLinks.forEach(link=>{link.classList.toggle('active',link.dataset.target===active);link.setAttribute('aria-current',link.dataset.target===active?'location':'false')});
+ }
 }
-const c=document.getElementById('contact').getBoundingClientRect(),cp=clamp((h-c.top)/(h+c.height*.4));$('#contact-star').style.transform=`translate3d(${-cp*190}px,${cp*85}px,0) rotate(${cp*10}deg)`;$('#contact-outline').classList.toggle('fill',cp>.52);
-}let active='home';for(const id of sectionIds){if(document.getElementById(id).getBoundingClientRect().top<h*.48)active=id}$$('.progress-rail a').forEach(a=>{a.classList.toggle('active',a.dataset.target===active);a.setAttribute('aria-current',a.dataset.target===active?'location':'false')})}
 function requestScroll(){if(!scrollRaf)scrollRaf=requestAnimationFrame(updateScroll)}window.addEventListener('scroll',requestScroll,{passive:true});window.addEventListener('resize',requestScroll,{passive:true});
 const observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}},{threshold:.12,rootMargin:'0px 0px -4% 0px'});$$('.reveal').forEach(el=>observer.observe(el));
 

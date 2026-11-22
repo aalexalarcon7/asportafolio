@@ -332,3 +332,32 @@
  .artwork-lightbox-meter>span,.artwork-thumb,.artwork-lightbox-v13 .artwork-lightbox-image{transition:none!important}
  .case-piece.case-animate{clip-path:none!important;transition:none!important}
 }
+
+/* V1.3.1 — Mobile Hero → Exhibition frame-rate optimization.
+   Only the mobile scene is simplified: desktop's cinematic 3D stays untouched. */
+@media (max-width:700px) and (prefers-reduced-motion:no-preference){
+  .gallery-corridor{
+    perspective:none;
+    transform-style:flat;
+    transform-origin:center;
+    backface-visibility:hidden;
+  }
+  .gallery-poster{
+    transform-style:flat;
+    backface-visibility:hidden;
+    box-shadow:0 10px 28px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.13);
+    border-width:4px;
+  }
+  .gallery-corridor::before,.gallery-corridor::after{
+    box-shadow:none;
+  }
+  .gallery-beam{
+    box-shadow:none;
+  }
+  .gallery-light{
+    background:radial-gradient(ellipse at 55% 47%,rgba(61,61,61,.5),#111 43%,#030303 78%);
+  }
+  .hero-main,.hero-star,.gallery-corridor,.gallery-poster,.gallery-overlay{
+    backface-visibility:hidden;
+  }
+}
