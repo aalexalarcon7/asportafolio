@@ -59,3 +59,16 @@ Se conservaron los efectos desarrollados en JavaScript DOM para no reescribir to
 ## Validación en este entorno
 
 Se verificó el HTML original de V2.4 con Playwright. No fue posible instalar dependencias npm por conectividad de DNS; por lo tanto **no se ha ejecutado aquí un `next build` completo**. Se incluye además la vista previa HTML independiente para revisar la experiencia.
+
+
+## Actualización 1.1 — Proyectos originales
+
+Se incorporaron cuatro proyectos de Ana Paula Sanabria a partir de los PDF entregados: Tango Arrabal, rediseño de Packaging Cachafaz, Born To Die y Garamond.
+
+Los recursos visuales se exportaron de los PDFs, se recortaron para presentarlos en la web y se optimizaron como WebP en `public/projects/`. No se generaron diseños alternativos con IA.
+
+Para actualizar la instalación local, reemplazá los archivos del proyecto con esta carpeta, conservando `.env.local` si lo utilizás. Después ejecutá `npm install` y `npm run dev`.
+
+No implica que Cachafaz o Lana Del Rey hayan encargado estos trabajos ni que Tango Arrabal haya sido un festival realizado. Se presentan como trabajos conceptuales o académicos.
+
+**Pendiente:** fecha y detalles confirmados de cada trabajo, datos de contacto, herramientas y fotos para About.

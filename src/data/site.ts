@@ -1,4 +1,4 @@
-/** Datos provisionales: reemplazar con material aprobado de la diseñadora. */
+/** Proyectos reales provistos por la diseñadora; textos editoriales resumidos a partir de sus PDFs. */
 export type Project = {
   slug: string;
   number: string;
@@ -15,10 +15,42 @@ export type Project = {
   gallery?: string[];
 };
 export const projects: Project[] = [
-  { slug:'proyecto-01', number:'01', name:'Proyecto 01', category:'Identidad visual', categoryShort:'IDENTIDAD VISUAL / CONCEPTO',coverText:'01.',coverClass:'art-1',year:'2026', description:'Exploración conceptual de identidad visual: escala, contraste y un sistema gráfico que se reconoce a primera vista.',brief:'Sistema de identidad visual ilustrativo para estudiar jerarquía, contraste y aplicaciones de marca.',deliverables:['Identidad visual','Composición gráfica','Sistema tipográfico'] },
-  { slug:'proyecto-02', number:'02', name:'Proyecto 02',category:'Diseño editorial',categoryShort:'DISEÑO EDITORIAL / CONCEPTO',coverText:'TYPE',coverClass:'art-2',year:'2026',description:'Exploración editorial de ritmo, grilla y jerarquías tipográficas. Una demostración, no un proyecto final.',brief:'Estudio de retícula editorial y dirección tipográfica con piezas de experimentación.',deliverables:['Diseño editorial','Retícula','Composición tipográfica'] },
-  { slug:'proyecto-03', number:'03', name:'Proyecto 03',category:'Packaging',categoryShort:'PACKAGING / CONCEPTO',coverText:'AS',coverClass:'art-3',year:'2026',description:'Estudio visual de materialidad, formas y aplicaciones de marca para una pieza de packaging conceptual.',brief:'Concepto experimental de packaging, materiales y lenguaje de marca.',deliverables:['Packaging','Arte aplicado','Dirección visual'] },
-  { slug:'proyecto-04', number:'04', name:'Proyecto 04',category:'Experimentación gráfica',categoryShort:'EXPERIMENTAL / CONCEPTO',coverText:'04',coverClass:'art-4',year:'2026',description:'Un ejercicio de experimentación gráfica en blanco y negro, creado para probar la experiencia de navegación.',brief:'Exploración visual de tipografía y composición mediante contrastes monocromáticos.',deliverables:['Experimental','Diseño gráfico','Motion concept'] },
+  {
+    slug:'tango-arrabal', number:'01', name:'Tango Arrabal', category:'Identidad visual · Festival', categoryShort:'BRANDING / SISTEMA VISUAL',
+    coverText:'TA', coverClass:'real-cover', year:'2026',
+    description:'Sistema de identidad visual para un festival de arte tanguero. Un lenguaje gráfico de tipografía expresiva, ornamentación y aplicaciones en medios impresos, vía pública y redes sociales.',
+    brief:'Proyecto académico de diseño de identidad para un festival de tango. Incluye marca principal, paleta cromática, pósteres, piezas de comunicación urbana, publicaciones digitales y sistema de acreditación.',
+    deliverables:['Identidad visual','Diseño de marca','Pósteres','Aplicaciones','Redes sociales'],
+    coverImage:'/projects/tango-arrabal/cover.webp',
+    gallery:['/projects/tango-arrabal/poster-rojo.webp','/projects/tango-arrabal/poster-azul.webp','/projects/tango-arrabal/aplicaciones.webp','/projects/tango-arrabal/sistema.webp']
+  },
+  {
+    slug:'cachafaz', number:'02', name:'Cachafaz — Packaging', category:'Rediseño de packaging', categoryShort:'PACKAGING / PRODUCTO',
+    coverText:'CA', coverClass:'real-cover', year:'',
+    description:'Rediseño conceptual de packaging para alfajores de chocolate blanco con crocante de pistacho. La propuesta desarrolla etiquetas, aplicaciones en lata y material de punto de venta.',
+    brief:'Ejercicio de rediseño de packaging de una marca existente, con etiquetas y mockups para una presentación en lata. No corresponde necesariamente a un lanzamiento oficial de Cachafaz.',
+    deliverables:['Rediseño de packaging','Etiquetas','Mockups','Punto de venta'],
+    coverImage:'/projects/cachafaz/cover.webp',
+    gallery:['/projects/cachafaz/latas.webp','/projects/cachafaz/frente-dorso.webp','/projects/cachafaz/punto-de-venta.webp','/projects/cachafaz/piezas-tecnicas.webp']
+  },
+  {
+    slug:'born-to-die', number:'03', name:'Born To Die', category:'Diseño discográfico · Editorial', categoryShort:'EDITORIAL / PACKAGING MUSICAL',
+    coverText:'BD', coverClass:'real-cover', year:'',
+    description:'Interpretación gráfica de Born To Die, de Lana Del Rey, bajo el concepto «El refugio y la trampa». Una serie de piezas discográficas que exploran la convivencia entre protección, deseo y encierro.',
+    brief:'Proyecto académico de arte gráfico para una edición conceptual en vinilo del álbum Born To Die, con carpeta exterior, fundas, discos, pósteres, libro de canciones y caja contenedora.',
+    deliverables:['Arte de álbum','Diseño de vinilo','Diseño editorial','Packaging','Ilustración'],
+    coverImage:'/projects/born-to-die/cover.webp',
+    gallery:['/projects/born-to-die/vinilos.webp','/projects/born-to-die/afiches.webp','/projects/born-to-die/libro.webp','/projects/born-to-die/caja.webp','/projects/born-to-die/sistema.webp']
+  },
+  {
+    slug:'garamond', number:'04', name:'Garamond', category:'Estudio tipográfico · Editorial', categoryShort:'TIPOGRAFÍA / EXPERIMENTACIÓN',
+    coverText:'G', coverClass:'real-cover', year:'',
+    description:'Exploración editorial de la familia Garamond, sus variantes, anatomía, proporciones y contraste. Composiciones que convierten el análisis tipográfico en lenguaje visual.',
+    brief:'Estudio académico y láminas tipográficas sobre Garamond, con análisis de serifas, altura de x, trazos, terminaciones, variantes y jerarquías de texto.',
+    deliverables:['Tipografía','Diseño editorial','Composición','Análisis tipográfico'],
+    coverImage:'/projects/garamond/cover.webp',
+    gallery:['/projects/garamond/lamina-01.webp','/projects/garamond/lamina-02.webp']
+  },
 ];
 export const tools = [
   { name:'PHOTOSHOP', initials:'Ps' },

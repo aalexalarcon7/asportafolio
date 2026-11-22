@@ -163,14 +163,15 @@ if(!reduce && matchMedia('(pointer:fine)').matches){const hs=heroStar;hero.addEv
 const dialog=$('#project-dialog'),label=$('#cursor-label'),workCards=$$('.work-card');
 const display=$('#experience-display'),artHost=$('#experience-art'),closeButton=$('#close-dialog');
 let activeWorkIndex=-1,returnFocus=null,projectMotionToken=0,activeFly=null,projectTransitionRunning=false;
-const projectDescriptions=[
- 'Exploración conceptual de identidad visual: escala, contraste y un sistema gráfico que se reconoce a primera vista.',
- 'Exploración editorial de ritmo, grilla y jerarquías tipográficas. Una demostración, no un proyecto final.',
- 'Estudio visual de materialidad, formas y aplicaciones de marca para una pieza de packaging conceptual.',
- 'Un ejercicio de experimentación gráfica en blanco y negro, creado para probar la experiencia de navegación.'
-];
 function removeFly(){if(activeFly){activeFly.remove();activeFly=null}}
 function clonedArtwork(card){const artwork=card.querySelector('.work-art').cloneNode(true);artwork.removeAttribute('id');return artwork}
+function galleryArtwork(card,which){
+ const artwork=clonedArtwork(card),url=card.dataset[which];
+ if(!url)return artwork;
+ artwork.querySelectorAll('img,.art-large').forEach(el=>el.remove());
+ const img=document.createElement('img');img.src=url;img.alt=`${card.dataset.name}: detalle del proyecto`;img.loading='lazy';img.className='work-cover-image';
+ artwork.prepend(img);return artwork;
+}
 function populateProject(index){
  const card=workCards[index];activeWorkIndex=index;const permalink=$('#case-permalink');if(permalink)permalink.href='/works/'+card.dataset.slug;
  $('#dialog-number').textContent='PROJECT '+card.dataset.number+' / '+String(workCards.length).padStart(2,'0');
@@ -180,12 +181,13 @@ function populateProject(index){
   title.replaceChildren(document.createTextNode('PROYECTO'),document.createElement('br'),document.createTextNode(card.dataset.number));
  }else title.textContent=displayName;
  $('#dialog-type').textContent=card.dataset.type.toUpperCase();
- $('#dialog-description').textContent=card.dataset.description||projectDescriptions[index];
+ $('#dialog-description').textContent=card.dataset.description||'';
+ const brief=$('#case-brief-text');if(brief)brief.textContent=card.dataset.brief||card.dataset.description||'';
  const following=(index+1)%workCards.length;
- $('#case-next-name').textContent='PROJECT '+workCards[following].dataset.number;
+ $('#case-next-name').textContent=workCards[following].dataset.name.toUpperCase();
  $('#next-art').replaceChildren(clonedArtwork(workCards[following]));
- $('#case-art-a').replaceChildren(clonedArtwork(card));
- $('#case-art-b').replaceChildren(clonedArtwork(card));
+ $('#case-art-a').replaceChildren(galleryArtwork(card,'galleryA'));
+ $('#case-art-b').replaceChildren(galleryArtwork(card,'galleryB'));
  $('#project-reading-fill').style.width='0%';
  artHost.replaceChildren(clonedArtwork(card));
  $('#next-project').textContent=index===workCards.length-1?'BACK TO PROJECT 01 ↗':'NEXT PROJECT ↗';
