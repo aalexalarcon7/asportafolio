@@ -361,3 +361,58 @@
     backface-visibility:hidden;
   }
 }
+
+/* =============================================================
+   AS DESIGN STUDIO / LOADER V4.4.2 (CANVA ORIGINAL)
+   Conserva los estilos de todas las secciones del sitio.
+   El avance de la animación se controla desde motion-runtime.js.
+   ============================================================= */
+.loader .loader-stage {
+  width: min(31vw, 370px);
+  min-width: 232px;
+  max-width: calc(80svh * 414 / 545);
+  aspect-ratio: 414 / 545;
+}
+.loader .card-back {display:none}
+.loader .card-letters {z-index:18}
+.loader .card-letters > img {
+  position:absolute;
+  display:block;
+  height:auto;
+  max-width:none;
+  object-fit:contain;
+  opacity:0;
+  transform:translateY(8px);
+  will-change:opacity,transform;
+}
+/* Coordenadas aprobadas de V4.4.2, no modificarlas. */
+.loader .card-monogram {left:74.6%;top:14.5%;width:12.6%;right:auto;bottom:auto;}
+.loader .card-name {left:11.9%;top:78.35%;width:60.95%;right:auto;bottom:auto;}
+.loader .card-country {left:11.9%;top:87.45%;width:55.2%;right:auto;bottom:auto;}
+/* PNG original de Canva: exterior y hueco transparentes.
+   El bisel opaco se interpone realmente ante la estrella. */
+.loader .card-face {
+  position:fixed;
+  display:block;
+  width:auto;
+  height:auto;
+  z-index:16;
+  opacity:1;
+  pointer-events:none;
+  image-rendering:auto;
+  transform:none;
+  transition:none;
+  filter:drop-shadow(0 10px 17px rgba(0,0,0,.28));
+  -webkit-mask-image:radial-gradient(circle var(--reveal-radius, 1px) at var(--reveal-x, -9999px) var(--reveal-y, -9999px), #000 0%, #000 55%, transparent 100%);
+  mask-image:radial-gradient(circle var(--reveal-radius, 1px) at var(--reveal-x, -9999px) var(--reveal-y, -9999px), #000 0%, #000 55%, transparent 100%);
+}
+.loader.exiting .card-face {
+  transform:none;
+  opacity:0;
+  transition:opacity .75s var(--ease);
+}
+/* La estrella original no rota en ningún momento del vuelo aprobado. */
+.loader .flight .trail {clip-path:none;}
+@media (max-width:700px) {
+  .loader .loader-stage {max-width:calc(80svh * 414 / 545)}
+}

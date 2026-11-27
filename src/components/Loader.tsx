@@ -1,1 +1,30 @@
-export function Loader(){return (<div className="loader" id="loader" role="status" aria-live="polite" aria-label="Introducción de AS Design Studio"><div className="loader-glow" id="loader-glow"></div><div className="loader-top micro"><span>AS® / LOADER STUDY V2.1<br /><span className="muted">FROM A SPARK TO AN EXPERIENCE</span></span><button id="skip" className="skip micro" type="button">SKIP INTRO ↗</button></div><div className="loader-stage" id="loader-card"><div className="card-back"></div><div className="card-letters"><div className="card-monogram">as</div><div className="card-name">design<br />studio</div><div className="card-country">HECHO EN ARGENTINA</div><div className="card-micro micro">AS®</div></div></div><svg className="card-face" id="card-face" viewBox="0 0 470 550" xmlns="http://www.w3.org/2000/svg" aria-label="Tarjeta de memoria de AS Design Studio"><defs><radialGradient id="card-lamp" cx="75%" cy="16%" r="47%"><stop offset="0" stopColor="#fff" stopOpacity=".88"></stop><stop offset=".14" stopColor="#ddd" stopOpacity=".44"></stop><stop offset=".42" stopColor="#fff" stopOpacity=".13"></stop><stop offset=".95" stopColor="#fff" stopOpacity="0"></stop></radialGradient></defs><path id="frame-path" d="M88 20 H359 L431 91 V234 H417 V263 H431 V465 Q431 520 378 520 H265 L247 501 Q238 493 230 501 L212 520 H78 Q29 520 29 471 V285 H45 V223 H29 V81 Q29 20 88 20 Z M100 84 H356 Q384 84 384 115 V428 Q384 468 351 468 H101 Q67 468 67 429 V123 Q67 84 100 84 Z"></path><path id="highlight-path" d="M88 20 H359 L431 91 V234 H417 V263 H431 V465 Q431 520 378 520 H265 L247 501 Q238 493 230 501 L212 520 H78 Q29 520 29 471 V285 H45 V223 H29 V81 Q29 20 88 20 Z M100 84 H356 Q384 84 384 115 V428 Q384 468 351 468 H101 Q67 468 67 429 V123 Q67 84 100 84 Z"></path><path id="outline-inner" d="M100 84 H356 Q384 84 384 115 V428 Q384 468 351 468 H101 Q67 468 67 429 V123 Q67 84 100 84 Z"></path><path d="M89 21 H360 L429 92" fill="none" stroke="#ffffff55" strokeWidth="1.5"></path></svg><div className="flight symbol" id="flight" aria-hidden="true"><span className="glow"></span><span className="trail"></span><svg viewBox="0 0 303 99"><use href="#as-star"></use></svg></div><div className="loader-meter" id="loader-meter"><div className="meter-labels micro"><span id="loading-label">COMPONIENDO EXPERIENCIA</span><span id="loading-progress">01 / 03</span></div><div className="meter"><span id="meter-fill"></span></div></div><div className="loader-note micro">AS DESIGN STUDIO / ARGENTINA<br />AN INTERACTIVE MOTION STUDY</div></div>);}
+export function Loader() {
+  return (
+    <div className="loader" id="loader" role="status" aria-live="polite" aria-label="Introducción de AS Design Studio">
+      <div className="loader-glow" id="loader-glow" />
+      <div className="loader-top micro">
+        <span>AS® / DESIGN STUDIO<br /><span className="muted">FROM A SPARK TO AN EXPERIENCE</span></span>
+        <button id="skip" className="skip micro" type="button">SKIP INTRO ↗</button>
+      </div>
+      <div className="loader-stage" id="loader-card">
+        <div className="card-back" />
+        <div className="card-letters">
+          <img className="card-monogram" id="typo-monogram" src="/brand/loader-as-canva.png" alt="as" draggable={false}/>
+          <img className="card-name" id="typo-name" src="/brand/loader-design-studio-canva.png" alt="design studio" draggable={false}/>
+          <img className="card-country" id="typo-country" src="/brand/loader-hecho-canva.png" alt="HECHO EN ARGENTINA" draggable={false}/>
+        </div>
+      </div>
+      <img className="card-face" id="card-face" src="/brand/loader-card-canva.png" alt="Tarjeta de memoria original de AS Design Studio" draggable={false}/>
+      <div className="flight symbol" id="flight" aria-hidden="true">
+        <span className="glow"/>
+        <span className="trail"/>
+        <svg viewBox="0 0 303 99"><use href="#as-star"/></svg>
+      </div>
+      <div className="loader-meter" id="loader-meter">
+        <div className="meter-labels micro"><span id="loading-label">REVELANDO IDENTIDAD</span><span id="loading-progress">01 / 03</span></div>
+        <div className="meter"><span id="meter-fill"/></div>
+      </div>
+      <div className="loader-note micro">AS DESIGN STUDIO / ARGENTINA<br/>PORTFOLIO / 2026</div>
+    </div>
+  );
+}

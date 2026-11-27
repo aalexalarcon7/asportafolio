@@ -11,28 +11,25 @@ let raf=0,introToken=0,scrollRaf=0,introActive=false,dialogReturnFocus=null;
 function cubic(p0,p1,p2,p3,t){let q=1-t;return q*q*q*p0+3*q*q*t*p1+3*q*t*t*p2+t*t*t*p3}
 // Loader V2.1: three spatial beats rather than one linear fly-in.
 // A: falling star (top right), B: occlusion beneath rim, C: gentle orbit into signature position.
+// Loader V4.4.2: curva única aprobada (V4 a 0.25x = nuevo 1x).
 function segment(a,b,t){return clamp((t-a)/(b-a))}
 function smoother(t){t=clamp(t);return t*t*(3-2*t)}
-function dynamicPath(){
- const r=card.getBoundingClientRect(),w=innerWidth,h=innerHeight;
- const landing={x:r.left+r.width*.46,y:r.top+r.height*.46};
- const rim={x:r.left+r.width*.875,y:r.top+r.height*.185};
- const portal={x:r.left+r.width*.665,y:r.top+r.height*.35};
- return {r,landing,
-  arrival:[{x:w+220,y:-h*.14},{x:w*.90,y:h*.035},{x:r.right+110,y:r.top-85},rim],
-  behind:[rim,{x:r.right+9,y:r.top+r.height*.305},{x:r.left+r.width*.92,y:r.top+r.height*.365},portal],
-  settle:[portal,{x:r.left+r.width*.52,y:r.top+r.height*.33},{x:r.left+r.width*.38,y:r.top+r.height*.43},landing]
- };
+function loaderPath(landing){
+ const origin={x:innerWidth+160,y:-180};
+ return [origin,
+  {x:lerp(origin.x,landing.x,.35),y:lerp(origin.y,landing.y,.08)},
+  {x:lerp(origin.x,landing.x,.72),y:lerp(origin.y,landing.y,.30)},landing];
 }
 function spotOnPath(points,t){return {x:cubic(points[0].x,points[1].x,points[2].x,points[3].x,t),y:cubic(points[0].y,points[1].y,points[2].y,points[3].y,t)}}
-function setStar(x,y,scale=1,angle=0,opacity=1,trail=0,glow=1){
+function setStar(x,y,scale=1,opacity=1,trail=0,glow=1){
  flight.style.opacity=String(clamp(opacity));
- flight.style.transform=`translate3d(${x}px,${y}px,0) translate(-50%,-50%) rotate(${angle}deg) scale(${scale})`;
+ flight.style.transform=`translate3d(${x}px,${y}px,0) translate(-50%,-50%) scale(${scale})`;
  flight.style.setProperty('--trail',String(clamp(trail)));
- flight.style.setProperty('--trail-length',`${Math.round(190+430*trail)}px`);
+ flight.style.setProperty('--trail-length',`${Math.round(190+380*trail)}px`);
  flight.style.setProperty('--glow-opacity',String(clamp(glow)));
- flight.style.setProperty('--star-bloom',`${(3+glow*15).toFixed(1)}px`);
+ flight.style.setProperty('--star-bloom',`${(3+glow*14).toFixed(1)}px`);
 }
+
 let dismissTimer=0;
 function endIntro(immediate=false){
  introToken++;cancelAnimationFrame(raf);clearTimeout(dismissTimer);introActive=false;
@@ -42,86 +39,110 @@ function endIntro(immediate=false){
  else{loader.style.opacity='0';dismissTimer=setTimeout(()=>loader.classList.add('dismissed'),850)}
  requestScroll();
 }
+const INTRO_FLIGHT=2.56;
+const INTRO_SETTLE=.64;
+const INTRO_TOTAL=INTRO_FLIGHT+INTRO_SETTLE; // 3.20s aprobado
+const INTRO_TYPO_DUR=.34;
+const INTRO_TYPO_GAP=.10;
+const INTRO_HANDOFF_START=4.05;
+const INTRO_HANDOFF_DURATION=.95;
 function startIntro(){
  introToken++;cancelAnimationFrame(raf);clearTimeout(dismissTimer);
  const token=introToken;introActive=true;
- window.scrollTo({top:0,behavior:'instant'});document.body.classList.add('is-loading');
+ window.scrollTo({top:0,behavior:'instant'});
+ document.body.classList.add('is-loading');
  hero.classList.remove('is-visible');heroStar.classList.remove('show');
  header.classList.remove('shown');rail.classList.remove('shown');
  loader.className='loader';loader.style.opacity='1';loader.style.backgroundColor='#000';
- loader.style.setProperty('--frame-opacity',0);loader.style.setProperty('--ambient-opacity',0);
- card.style.setProperty('--card-halo',0);
  flight.style.opacity='0';flight.style.setProperty('--trail','0');
- $('#meter-fill').style.width='0';$('#loading-label').textContent='REVELANDO IDENTIDAD';
- $('#loading-progress').textContent='01 / 03';
- const start=performance.now(),path=dynamicPath(),r=path.r;
- const frame=$('#card-face');frame.style.left=`${r.left}px`;frame.style.top=`${r.top}px`;frame.style.width=`${r.width}px`;frame.style.height=`${r.height}px`;
- const destRect=heroStar.getBoundingClientRect();
- const heroDest={x:destRect.left+destRect.width*.50,y:destRect.top+destRect.height*.47};
- const move=4.50;
+ const frame=$('#card-face'), glow=$('#loader-glow'),fill=$('#meter-fill');
+ const typo=[$('#typo-monogram'),$('#typo-name'),$('#typo-country')];
+ typo.forEach(el=>{el.style.opacity='0';el.style.transform='translateY(8px)'});
+ glow.style.opacity='0';
+ fill.style.width='0';$('#loading-label').textContent='REVELANDO IDENTIDAD';$('#loading-progress').textContent='01 / 03';
+ frame.style.opacity='1';frame.style.setProperty('--reveal-x','-9999px');frame.style.setProperty('--reveal-y','-9999px');frame.style.setProperty('--reveal-radius','1px');
+ const r=card.getBoundingClientRect();
+ if(r.width<40 || r.height<40){
+  // No iniciar desde un layout sin medidas, evita el salto del primer fotograma.
+  raf=requestAnimationFrame(()=>{if(token===introToken)startIntro()});return;
+ }
+ const landing={x:r.left+r.width*.46,y:r.top+r.height*.46};
+ const curve=loaderPath(landing);
+ // PNG 736x736 con tarjeta original en x=161..575, y=101..646.
+ const photoScale=r.width/414;
+ const imageRect={left:r.left-161*photoScale,top:r.top-101*photoScale,size:736*photoScale};
+ frame.style.left=`${imageRect.left}px`;
+ frame.style.top=`${imageRect.top}px`;
+ frame.style.width=`${imageRect.size}px`;
+ frame.style.height=`${imageRect.size}px`;
+ const heroRect=heroStar.getBoundingClientRect();
+ const heroDest={x:heroRect.left+heroRect.width*.5,y:heroRect.top+heroRect.height*.5};
+ const heroScale=heroRect.width/Math.max(1,flight.offsetWidth);
+ const start=performance.now();
+ const flightEndScale=.72;
+ const smooth=smoother;
+ function updateLighting(pos,radius){
+  const radiusPx=radius*(r.height/550);
+  frame.style.setProperty('--reveal-x',`${(pos.x-imageRect.left).toFixed(2)}px`);
+  frame.style.setProperty('--reveal-y',`${(pos.y-imageRect.top).toFixed(2)}px`);
+  frame.style.setProperty('--reveal-radius',`${radiusPx.toFixed(2)}px`);
+ }
  function animate(now){
   if(token!==introToken)return;
   const t=(now-start)/1000;
-  let pos=path.arrival[0],scale=1.14,rot=-23,opacity=0,trail=0,glow=.5;
-  // 00.18-00.98: fast incoming trajectory from upper right
-  if(t>=.18 && t<.98){
-   const p=segment(.18,.98,t);
-   pos=spotOnPath(path.arrival,Math.sin(p*Math.PI/2));
-   scale=1.28-.12*smoother(p);rot=-24+5*smoother(p);
-   opacity=segment(.18,.30,t);trail=Math.sin(p*Math.PI)*.95+.05;glow=.75+.25*Math.sin(p*Math.PI);
+  let pos=landing,scale=flightEndScale,opacity=1,trail=0,light=.10,revealRadius=1100;
+  if(t<INTRO_FLIGHT){
+   const p=clamp(t/INTRO_FLIGHT),e=easeOut(p);
+   pos=spotOnPath(curve,e);scale=lerp(1,flightEndScale,e);
+   opacity=smooth(segment(0,.10,p));
+   trail=Math.sin(p*Math.PI)*.8;
+   light=.50+.42*Math.sin(p*Math.PI);
+   revealRadius=80+820*Math.pow(p,3);
+  }else if(t<INTRO_TOTAL){
+   const sp=clamp((t-INTRO_FLIGHT)/INTRO_SETTLE),se=easeInOut(sp);
+   trail=Math.sin(sp*Math.PI)*.10*(1-se);
+   light=lerp(.50,.14,se);
+   revealRadius=900+200*se;
   }
-  // 00.98-01.52: light grazes the right edge; star passes BEHIND the physical rim.
-  else if(t<1.52){
-   const p=segment(.98,1.52,t);
-   pos=spotOnPath(path.behind,smoother(p));scale=1.16-.20*p;
-   rot=-19+10*p;
-   // true two-depth disappearance: card-face remains above star; brightness also dims when hidden.
-   opacity=p<.37?1-smoother(p/.37)*.96:p<.66?.04:.04+.96*smoother((p-.66)/.34);
-   trail=(1-p)*.27;glow=p<.3?1:.25;
+  // Luz y máscara sincronizadas exactamente con la V4.4.2.
+  if(t<INTRO_HANDOFF_START) updateLighting(pos,revealRadius);
+  if(t>=INTRO_TOTAL){
+   typo.forEach((el,i)=>{
+    const v=smooth(segment(INTRO_TOTAL+i*INTRO_TYPO_GAP,INTRO_TOTAL+i*INTRO_TYPO_GAP+INTRO_TYPO_DUR,t));
+    el.style.opacity=String(v);el.style.transform=`translateY(${((1-v)*8).toFixed(2)}px)`;
+   });
   }
-  // 01.52-02.27: return from behind the frame into the negative space, slow landing.
-  else if(t<2.27){
-   const p=segment(1.52,2.27,t);
-   pos=spotOnPath(path.settle,smoother(p));scale=.96-.10*smoother(p);
-   rot=-9+9*smoother(p);opacity=1;trail=.13*(1-p);glow=.3*(1-p);
-  }
-  else {pos=path.landing;scale=.86;rot=0;opacity=1;trail=0;glow=.12;}
-  // Card is not shown on a timer alone: the highlight follows the trajectory of the star.
-  // First light begins near card's upper-right border and settles into dark graphite.
-  if(t>.67)loader.classList.add('lit');
-  const appearance=smoother(segment(.66,1.58,t));
-  loader.style.setProperty('--frame-opacity',String(appearance));
-  const flash=Math.sin(Math.PI*segment(.65,1.75,t));
-  loader.style.setProperty('--ambient-opacity',String(Math.max(0,flash)*.9));
-  card.style.setProperty('--card-halo',String(appearance*.75));
-  $('#loader-glow').style.setProperty('--light-x',`${pos.x/innerWidth*100}%`);
-  $('#loader-glow').style.setProperty('--light-y',`${pos.y/innerHeight*100}%`);
-  grad.setAttribute('cx',`${(pos.x-r.left)/r.width*100}%`);
-  grad.setAttribute('cy',`${(pos.y-r.top)/r.height*100}%`);
-  // Sharpen the card after the specular light moves away.
-  grad.setAttribute('r',`${Math.round(36+20*flash)}%`);
-  if(t>2.18)loader.classList.add('typed');
-  if(t>2.52){const progress=smoother(segment(2.52,3.43,t));$('#meter-fill').style.width=`${Math.round(progress*100)}%`;
-   $('#loading-progress').textContent=t<2.95?'02 / 03':t<3.43?'03 / 03':'READY';}
-  if(t>3.38)$('#loading-label').textContent='EXPERIENCIA LISTA';
-  if(t>3.56){
+  const textEnd=INTRO_TOTAL+2*INTRO_TYPO_GAP+INTRO_TYPO_DUR;
+  const meter=smooth(segment(INTRO_TOTAL,textEnd,t));
+  fill.style.width=`${Math.round(meter*100)}%`;
+  $('#loading-progress').textContent=t<INTRO_TOTAL?'01 / 03':t<textEnd?'02 / 03':'READY';
+  if(t>=textEnd)$('#loading-label').textContent='EXPERIENCIA LISTA';
+  const dist=Math.hypot(pos.x-landing.x,pos.y-landing.y);
+  glow.style.opacity=String(.25*clamp(1-dist/(Math.max(innerWidth,innerHeight)*.55)));
+  glow.style.setProperty('--light-x',`${(pos.x/innerWidth)*100}%`);
+  glow.style.setProperty('--light-y',`${(pos.y/innerHeight)*100}%`);
+  if(t>=INTRO_HANDOFF_START){
+   // El aterrizaje en la tarjeta y el destino del Hero son puntos distintos.
+   // Este tramo es independiente del vuelo aprobado, que nunca cambia.
    if(!loader.classList.contains('exiting')){
-    loader.classList.add('exiting');loader.style.backgroundColor='transparent';hero.classList.add('is-visible');
-    header.classList.add('shown');rail.classList.add('shown');document.body.classList.remove('is-loading');
+    loader.classList.add('exiting');loader.style.backgroundColor='transparent';
+    hero.classList.add('is-visible');header.classList.add('shown');rail.classList.add('shown');
+    document.body.classList.remove('is-loading');
    }
-   const p=smoother(segment(3.56,4.40,t));
-   pos={x:lerp(path.landing.x,heroDest.x,p),y:lerp(path.landing.y,heroDest.y,p)};
-   scale=lerp(.86,1.52,p);rot=lerp(0,-13,p);opacity=1-smoother(segment(4.07,4.43,t));
-   trail=.23*Math.sin(p*Math.PI);
-   if(t>4.12)heroStar.classList.add('show');
-   // Hide the flying layer before the final hero symbol takes over.
+   const p=smooth(clamp((t-INTRO_HANDOFF_START)/INTRO_HANDOFF_DURATION));
+   pos={x:lerp(landing.x,heroDest.x,p),y:lerp(landing.y,heroDest.y,p)};
+   scale=lerp(flightEndScale,heroScale,p);
+   opacity=1-smooth(segment(.64,1,p));
+   light=.10*(1-p);
+   if(p>.63)heroStar.classList.add('show');
   }
-  setStar(pos.x,pos.y,scale,rot,opacity,trail,glow);
-  if(t>=move){endIntro();return;}
+  setStar(pos.x,pos.y,scale,opacity,trail,light);
+  if(t>=INTRO_HANDOFF_START+INTRO_HANDOFF_DURATION){endIntro();return;}
   raf=requestAnimationFrame(animate);
  }
  raf=requestAnimationFrame(animate);
 }
+
 $('#skip').addEventListener('click',()=>endIntro(true));$('#replay').addEventListener('click',()=>{if(reduce){scrollTo({top:0,behavior:'instant'});return}startIntro()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&introActive)endIntro(true)});
 const sectionIds=['home','exhibition','works','expertise','about','contact'];
 function sectionProgress(id){const el=document.getElementById(id),r=el.getBoundingClientRect();return clamp(-r.top/Math.max(1,r.height-innerHeight))}
